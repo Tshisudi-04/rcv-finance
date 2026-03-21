@@ -470,12 +470,31 @@ function toggleDetail(id){
 function uploadReceipt(txId,input){
   if(!input.files||!input.files[0]) return;
   var file=input.files[0],statusEl=document.getElementById("us_"+txId);
-  if(statusEl) statusEl.style.display="block";
-  var ref=storage.ref("receipts/"+txId+"_"+Date.now()+"_"+file.name);
-  ref.put(file).then(function(snap){ return snap.ref.getDownloadURL(); }).then(function(url){
-    return db.collection("transactions").doc(txId).update({receiptUrl:url});
-  }).then(function(){ if(statusEl) statusEl.style.display="none"; })
-  .catch(function(e){ if(statusEl) statusEl.style.display="none"; alert("Upload failed: "+e.message); });
+  if(statusEl){statusEl.textContent="Compressing...";statusEl.style.display="block";}
+  compressImage(file,800,0.7,function(blob){
+    if(statusEl) statusEl.textContent="Uploading...";
+    var ref=storage.ref("receipts/"+txId+"_"+Date.now());
+    ref.put(blob).then(function(snap){return snap.ref.getDownloadURL();}).then(function(url){
+      return db.collection("transactions").doc(txId).update({receiptUrl:url});
+    }).then(function(){if(statusEl) statusEl.style.display="none";})
+    .catch(function(e){if(statusEl) statusEl.style.display="none";alert("Upload failed: "+e.message);});
+  });
+}
+function compressImage(file,maxWidth,quality,callback){
+  if(!file.type.startsWith("image/")){callback(file);return;}
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var scale=Math.min(1,maxWidth/img.width);
+      var canvas=document.createElement("canvas");
+      canvas.width=img.width*scale; canvas.height=img.height*scale;
+      canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+      canvas.toBlob(function(blob){callback(blob);},"image/jpeg",quality);
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 function openLightbox(url){ document.getElementById("lbImg").src=url; document.getElementById("lbDl").href=url; document.getElementById("lightbox").classList.add("open"); }
 function closeLightbox(){ document.getElementById("lightbox").classList.remove("open"); }
