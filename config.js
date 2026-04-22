@@ -6,14 +6,14 @@
 const APP_CONFIG = {
 
   // --- FIREBASE SETTINGS (from Firebase Console → Project Settings → Your Apps) ---
-  firebase: {
-    apiKey:            "AIzaSyDYIoAWfSGFbEeTyaFcD_18vJ6RVK4tcXk",
-    authDomain:        "church-finance-system-f1ca4.firebaseapp.com",
-    projectId:         "church-finance-system-f1ca4",
-    storageBucket:     "church-finance-system-f1ca4.firebasestorage.app",
-    messagingSenderId: "209970272665",
-    appId:             "1:209970272665:web:909a10d23301a58ad0db08"
-  },
+ var firebaseConfig = {
+  apiKey: "DISABLED",
+  authDomain: "disabled.firebaseapp.com",
+  projectId: "disabled",
+  storageBucket: "disabled.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:000000000000"
+};
 
   // --- USER ROLES ---
   // After adding users in Firebase Authentication, paste each person's UID below.
